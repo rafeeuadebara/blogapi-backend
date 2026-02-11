@@ -1,53 +1,81 @@
 import * as postModel from "../models/postModel.js";
 
+
 export const listPosts = async (req, res) => {
-  const posts = await postModel.getAllPosts();
-  res.json(posts);
+  try {
+    const posts = await postModel.getAllPosts();
+    return res.json(posts);
+  } catch (err) {
+    console.error("listPosts error:", err);
+    return res.status(500).json({ error: "internal server error" });
+  }
 };
 
+
 export const getPost = async (req, res) => {
-  const post = await postModel.getPostById(req.params.id);
-  if (!post) return res.status(404).json({ error: "Post not found" });
-  res.json(post);
+  try {
+    const post = await postModel.getPostById(req.params.id);
+    if (!post) return res.status(404).json({ error: "Post not found" });
+    return res.json(post);
+  } catch (err) {
+    console.error("getPost error:", err);
+    return res.status(500).json({ error: "internal server error" });
+  }
 };
 
 export const createPost = async (req, res) => {
-  const { title, content } = req.body;
+  try {
+    const { title, content } = req.body;
 
-  if (!title || !content)
-    return res.status(400).json({ error: "title and content required" });
+    if (!title || !content) {
+      return res.status(400).json({ error: "title and content required" });
+    }
 
-  const post = await postModel.createPost(
-    req.user.sub,
-    title,
-    content
-  );
+    const post = await postModel.createPost(
+      req.user.sub,
+      title,
+      content
+    );
 
-  res.status(201).json(post);
+    return res.status(201).json(post);
+  } catch (err) {
+    console.error("createPost error:", err);
+    return res.status(500).json({ error: "internal server error" });
+  }
 };
 
 export const updatePost = async (req, res) => {
-  const { title, content } = req.body;
+  try {
+    const { title, content } = req.body;
 
-  const post = await postModel.updatePost(
-    req.params.id,
-    req.user.sub,
-    title,
-    content
-  );
+    const post = await postModel.updatePost(
+      req.params.id,
+      req.user.sub,
+      title,
+      content
+    );
 
-  if (!post) return res.status(403).json({ error: "Not allowed" });
+    if (!post) return res.status(403).json({ error: "Not allowed" });
 
-  res.json(post);
+    return res.json(post);
+  } catch (err) {
+    console.error("updatePost error:", err);
+    return res.status(500).json({ error: "internal server error" });
+  }
 };
 
 export const deletePost = async (req, res) => {
-  const ok = await postModel.deletePost(
-    req.params.id,
-    req.user.sub
-  );
+  try {
+    const ok = await postModel.deletePost(
+      req.params.id,
+      req.user.sub
+    );
 
-  if (!ok) return res.status(403).json({ error: "Not allowed" });
+    if (!ok) return res.status(403).json({ error: "Not allowed" });
 
-  res.json({ success: true });
+    return res.json({ success: true });
+  } catch (err) {
+    console.error("deletePost error:", err);
+    return res.status(500).json({ error: "internal server error" });
+  }
 };

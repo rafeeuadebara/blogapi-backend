@@ -2,13 +2,14 @@ import pool from "../config/db.js";
 
 export const getAllPosts = async () => {
   const { rows } = await pool.query(
-    `SELECT posts.id, title, content, created_at, users.email 
-     FROM posts 
+    `SELECT posts.id, posts.title, posts.content, posts.created_at, users.email
+     FROM posts
      JOIN users ON users.id = posts.user_id
-     ORDER BY created_at DESC`
+     ORDER BY posts.created_at DESC`
   );
   return rows;
 };
+
 
 export const getPostById = async (id) => {
   const { rows } = await pool.query(
